@@ -3,7 +3,6 @@ kind: Application
 metadata:
   name: devops-demo
   namespace: argocd
-
 spec:
   project: default
 
@@ -15,3 +14,7 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: devops-demo
+
+  syncPolicy:
+    automated:
+      selfHeal: true
