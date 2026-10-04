@@ -9,7 +9,7 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 jobs:
@@ -86,25 +86,32 @@ jobs:
         run: |
           docker push ghcr.io/mattraw57/k3s-demo-api:${{ github.sha }}
           docker push ghcr.io/mattraw57/k3s-demo-api:latest
-  deploy:
+
+  update-manifest:
     runs-on: ubuntu-latest
     needs: build
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    steps:
-      - name: Configure SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
 
-      - name: Deploy to k3s
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Update Kubernetes image
         run: |
-          ssh "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
-            "kubectl --kubeconfig=/home/ubuntu/.kube/config \
-             set image deployment/demo-api \
-             api=ghcr.io/mattraw57/k3s-demo-api:${{ github.sha }} \
-             -n devops-demo && \
-             kubectl --kubeconfig=/home/ubuntu/.kube/config \
-             rollout status deployment/demo-api \
-             -n devops-demo --timeout=120s"
+          sed -i "s|image: ghcr.io/mattraw57/k3s-demo-api:.*|image: ghcr.io/mattraw57/k3s-demo-api:${{ github.sha }}|" \
+            k8s/devops-demo/deployment.yaml
+
+      - name: Commit deployment manifest
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add k8s/devops-demo/deployment.yaml
+
+          if git diff --cached --quiet; then
+            echo "Manifest already uses this image"
+            exit 0
+          fi
+
+          git commit -m "Deploy ${{ github.sha }} [skip ci]"
+          git push origin HEAD:main
