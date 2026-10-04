@@ -87,5 +87,10 @@ jobs:
       - name: Deploy to k3s
         run: |
           ssh "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
-            "kubectl set image deployment/demo-api api=ghcr.io/mattraw57/k3s-demo-api:${{ github.sha }} -n devops-demo && \
-             kubectl rollout status deployment/demo-api -n devops-demo --timeout=120s"
+            "kubectl --kubeconfig=/home/ubuntu/.kube/config \
+             set image deployment/demo-api \
+             api=ghcr.io/mattraw57/k3s-demo-api:${{ github.sha }} \
+             -n devops-demo && \
+             kubectl --kubeconfig=/home/ubuntu/.kube/config \
+             rollout status deployment/demo-api \
+             -n devops-demo --timeout=120s"
