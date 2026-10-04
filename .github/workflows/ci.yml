@@ -47,7 +47,32 @@ jobs:
       - name: Build Docker image
         run: docker build -t k3s-demo-api:test ./app
 
-      - name: Scan Docker image with Trivy
+      - name: Smoke test Docker image
+        run: |
+          docker network create smoke-test
+
+          docker run -d \
+            --name redis-test \
+            --network smoke-test \
+            redis:8-alpine
+
+          docker run -d \
+            --name api-test \
+            --network smoke-test \
+            -e REDIS_URL=redis://redis-test:6379 \
+            -p 3000:3000 \
+            k3s-demo-api:test
+
+          sleep 3
+          curl --fail http://localhost:3000/health
+
+      - name: Clean up smoke test
+        if: always()
+        run: |
+          docker rm -f api-test redis-test || true
+          docker network rm smoke-test || true
+
+       - name: Scan Docker image with Trivy
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: k3s-demo-api:test
