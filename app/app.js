@@ -8,7 +8,7 @@ function createApp(redis) {
     const visits = await redis.incr("visits");
 
     res.json({
-      message: "Hello from automated CI/CD!",
+      message: "Hello from GitOps!!",
       version: "v5",
       hostname: os.hostname(),
       visits
