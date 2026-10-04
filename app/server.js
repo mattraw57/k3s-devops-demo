@@ -1,8 +1,6 @@
-const express = require("express");
-const os = require("os");
 const { createClient } = require("redis");
+const { createApp } = require("./app");
 
-const app = express();
 const port = 3000;
 
 const redis = createClient({
@@ -17,22 +15,7 @@ redis.on("error", (err) => {
 async function start() {
   await redis.connect();
 
-  app.get("/", async (req, res) => {
-    const visits = await redis.incr("visits");
-
-    res.json({
-      message: "Hello from Kubernetes!",
-      version: "v5",
-      hostname: os.hostname(),
-      visits
-    });
-  });
-
-  app.get("/health", (req, res) => {
-    res.json({
-      status: "healthy"
-    });
-  });
+  const app = createApp(redis);
 
   app.listen(port, "0.0.0.0", () => {
     console.log(`API listening on port ${port}`);

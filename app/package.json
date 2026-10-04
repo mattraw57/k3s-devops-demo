@@ -2,10 +2,14 @@
   "name": "k3s-demo-api",
   "version": "1.0.0",
   "scripts": {
+    "test": "node --test",
     "start": "node server.js"
   },
   "dependencies": {
     "express": "^5.1.0",
     "redis": "^5.12.1"
+  },
+  "devDependencies": {
+    "supertest": "^7.3.1"
   }
 }
