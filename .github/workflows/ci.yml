@@ -48,7 +48,7 @@ jobs:
         run: docker build -t k3s-demo-api:test ./app
 
       - name: Smoke test Docker image
-        run: |
+        run:
           docker network create smoke-test
 
           docker run -d \
