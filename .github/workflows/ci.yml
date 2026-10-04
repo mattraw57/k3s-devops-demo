@@ -48,21 +48,10 @@ jobs:
         run: docker build -t k3s-demo-api:test ./app
 
       - name: Smoke test Docker image
-        run:
+        run: |
           docker network create smoke-test
-
-          docker run -d \
-            --name redis-test \
-            --network smoke-test \
-            redis:8-alpine
-
-          docker run -d \
-            --name api-test \
-            --network smoke-test \
-            -e REDIS_URL=redis://redis-test:6379 \
-            -p 3000:3000 \
-            k3s-demo-api:test
-
+          docker run -d --name redis-test --network smoke-test redis:8-alpine
+          docker run -d --name api-test --network smoke-test -e REDIS_URL=redis://redis-test:6379 -p 3000:3000 k3s-demo-api:test
           sleep 3
           curl --fail http://localhost:3000/health
 
