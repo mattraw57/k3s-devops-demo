@@ -1,0 +1,13 @@
+# Secrets
+k8s/secret.yaml
+
+# Node
+node_modules/
+npm-debug.log*
+
+# macOS
+.DS_Store
+
+# Environment files
+.env
+.env.*

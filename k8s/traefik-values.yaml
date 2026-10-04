@@ -1,0 +1,14 @@
+service:
+  spec:
+    type: NodePort
+
+ports:
+  web:
+    port: 8000
+    exposedPort: 80
+    nodePort: 30081
+
+  websecure:
+    port: 8443
+    exposedPort: 443
+    nodePort: 30443
