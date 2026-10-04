@@ -42,3 +42,12 @@ jobs:
 
       - name: Build Docker image
         run: docker build -t k3s-demo-api:test ./app
+
+      - name: Scan Docker image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: k3s-demo-api:test
+          format: table
+          exit-code: "1"
+          severity: CRITICAL
+          ignore-unfixed: true
