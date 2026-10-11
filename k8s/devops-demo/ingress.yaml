@@ -4,10 +4,13 @@ metadata:
   name: demo-api
   namespace: devops-demo
   annotations:
-    argocd.argoproj.io/ignore-healthcheck: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: traefik
-
+  tls:
+    - hosts:
+        - k3s.rawdevelopment.co.uk
+      secretName: demo-api-tls
   rules:
     - host: k3s.rawdevelopment.co.uk
       http:
