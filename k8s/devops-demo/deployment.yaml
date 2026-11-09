@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: ghcr.io/mattraw57/k3s-demo-api:78fb09ade68689732e0fb90084034e8d33719f2e
+          image: ghcr.io/mattraw57/k3s-demo-api:fbb0feb7b413d5439a28c5dfaf2c7e55b80f8503
           ports:
             - containerPort: 3000
 
